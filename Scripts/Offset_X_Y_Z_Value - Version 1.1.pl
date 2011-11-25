@@ -32,6 +32,18 @@ my $r_offset;
 $r_offset = <STDIN>;
 chomp $r_offset;
 
+print "Please enter the value of the f-offset. Enter 0 if you do not wish to offset:\n";
+my $f_offset; 
+$f_offset = <STDIN>;
+chomp $f_offset;
+
+print "Please enter the value of the p-offset. Enter 0 if you do not wish to offset:\n";
+my $p_offset; 
+$p_offset = <STDIN>;
+chomp $p_offset;
+
+
+
 
 ########## FILE OPENING CAN BE DONE IN A MODULE ##############
 
@@ -76,7 +88,7 @@ foreach (@input_lines) {
 
 
 	#make sure we dont modify the wrong lines
-	unless ($_ =~ /^\s*G\d{1,3}(?=.*\b(?:x|y|z)\-?\d{1,5}(?:\.\d{1,5})?)/mi) {
+	unless ($_ =~ /^\s*G\d{1,3}(?=.*\b(?:x|y|z|p)\-?\d{1,5}(?:\.\d{1,5})?)/mi) {
 	    next;
 	}
 
@@ -84,17 +96,22 @@ foreach (@input_lines) {
 	my $temp_y;
 	my $temp_z;
 	my $temp_r;
+	my $temp_f;
+	my $temp_p;
 	my $rest;
+	my $tail;
 
 # Extract values from line using regex
 
-	($rest, $temp_x, $temp_y, $temp_z, $temp_r) = ($_=~ /^\s*(G\d{1,2}.*?\b)(?=.*?(?:x|y|z)\-?\d{1,5}(?:\.\d{1,5})?)(?:X(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Y(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Z(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}R(\-?\d{1,5}(?:\.\d{1,4})?))?\s*$/mi);
+	($rest, $temp_x, $temp_y, $temp_z, $temp_r, $temp_f, $temp_p, $tail) = ($_=~ /^\s*(G\d{1,2}.*?\b)(?=.*?(?:x|y|z|p)\-?\d{1,5}(?:\.\d{1,5})?)(?:X(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Y(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Z(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}R(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}F(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}P(\-?\d{1,5}(?:\.\d{1,4})?))?(\s{0,3}\%.*)?$/mi);
 
 	#add offsets to the values
 	if ($temp_z){$temp_z += $z_offset;}
 	if ($temp_x){$temp_x += $x_offset;}
 	if ($temp_y){$temp_y += $y_offset;}
 	if ($temp_r){$temp_r += $r_offset;}
+	if ($temp_f){$temp_f += $f_offset;}
+	if ($temp_p){$temp_p += $p_offset;}
 
 
 	#print the new-line including the z-value and the rest of the stuff
@@ -103,6 +120,10 @@ foreach (@input_lines) {
 	if ($temp_y) {$_ .= " Y$temp_y";}
 	if ($temp_z) {$_ .= " Z$temp_z";}
 	if ($temp_r) {$_ .= " R$temp_r";}
+	if ($temp_f) {$_ .= " F$temp_f";}
+	if ($temp_p) {$_ .= " P$temp_p";}
+	if ($tail) {$_ .= " $tail";}
+
 	
 	#	$_ = "$rest"."X$temp_x Y$temp_y Z$temp_z";
 	}
