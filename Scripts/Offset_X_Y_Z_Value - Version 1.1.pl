@@ -106,23 +106,25 @@ foreach (@input_lines) {
 	($rest, $temp_x, $temp_y, $temp_z, $temp_r, $temp_f, $temp_p, $tail) = ($_=~ /^\s*(G\d{1,2}.*?\b)(?=.*?(?:x|y|z|p)\-?\d{1,5}(?:\.\d{1,5})?)(?:X(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Y(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Z(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}R(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}F(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}P(\-?\d{1,5}(?:\.\d{1,4})?))?(\s{0,3}\%.*)?$/mi);
 
 	#add offsets to the values
-	if ($temp_z){$temp_z += $z_offset;}
-	if ($temp_x){$temp_x += $x_offset;}
-	if ($temp_y){$temp_y += $y_offset;}
-	if ($temp_r){$temp_r += $r_offset;}
-	if ($temp_f){$temp_f += $f_offset;}
-	if ($temp_p){$temp_p += $p_offset;}
+	if (defined $temp_z){
+		$temp_z += $z_offset;
+	}
+	if (defined $temp_x){$temp_x += $x_offset;}
+	if (defined $temp_y){$temp_y += $y_offset;}
+	if (defined $temp_r){$temp_r += $r_offset;}
+	if (defined $temp_f){$temp_f += $f_offset;}
+	if (defined $temp_p){$temp_p += $p_offset;}
 
 
 	#print the new-line including the z-value and the rest of the stuff
 	$_ = "$rest";
-	if ($temp_x) {$_ .= "X$temp_x";}
-	if ($temp_y) {$_ .= " Y$temp_y";}
-	if ($temp_z) {$_ .= " Z$temp_z";}
-	if ($temp_r) {$_ .= " R$temp_r";}
-	if ($temp_f) {$_ .= " F$temp_f";}
-	if ($temp_p) {$_ .= " P$temp_p";}
-	if ($tail) {$_ .= " $tail";}
+	if (defined $temp_x) {$_ .= "X$temp_x";}
+	if (defined $temp_y) {$_ .= " Y$temp_y";}
+	if (defined $temp_z) {$_ .= " Z$temp_z";}
+	if (defined $temp_r) {$_ .= " R$temp_r";}
+	if (defined $temp_f) {$_ .= " F$temp_f";}
+	if (defined $temp_p) {$_ .= " P$temp_p";}
+	if (defined $tail) {$_ .= " $tail";}
 
 	
 	#	$_ = "$rest"."X$temp_x Y$temp_y Z$temp_z";

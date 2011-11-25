@@ -61,7 +61,7 @@ $input_data = join ('', @input_lines);
 
 my ($temp_step_initial, $temp_step_final, $start_step);
 
-($temp_step_initial, $temp_step_final) = ($input_data =~ /X\-?\d{1,5}(?:\.\d{1,4})?\s{1,2}Y\-?\d{1,5}(?:\.\d{1,4})?\s{1,2}Z(\-?\d{1,5}(?:\.\d{1,4})?)\s*\n.*Z(?!\1\s)(\-?\d{1,5}(?:\.\d{1,4})?)/mi);
+($temp_step_initial, $temp_step_final) = ($input_data =~ /^\s*G\d{1,2}(?=.*\b(?:x|y|z|p)\-?\d{1,5}(?:\.\d{1,5})?).*Z(\-?\d{1,5}(?:\.\d{1,4})?).*\n(?s:.*?)Z(?!\1\s)(\-?\d{1,5}(?:\.\d{1,4})?)/mi);
 
 $start_step = $temp_step_final - $temp_step_initial;
 
@@ -83,7 +83,7 @@ chomp ($new_step, $start_position);
 my $count = 1;
 my @output_array;
 
-while ($input_data =~ /.*Z(\-?\d{1,5}(?:\.\d{1,4})?)\s*\n(?:.*Z(?:\1)\s*\n){1,}/mig) {
+while ($input_data =~ /^(?!.*X0(?:\.0)?\s{1,3}Y0(?:\.0)?\s{1,3}Z0(?:\.0)?).*(?!X0(?:\.0)?\s{1,3}Y0(?:\.0)?\s{1,3}Z0(?:\.0)?)Z(\-?\d{1,5}(?:\.\d{1,4})?).*\n(?:.*Z(?:\1)\s*\n|(?:G\d{1,2}|\%)(?!.*Z\-?\d{1,5}(?:\.\d{1,4})?).*\n|\s*\n){1,}/mig) {
 
     my @loop_lines;
     @loop_lines = split ("\n", $&);
@@ -93,14 +93,24 @@ while ($input_data =~ /.*Z(\-?\d{1,5}(?:\.\d{1,4})?)\s*\n(?:.*Z(?:\1)\s*\n){1,}/
 
 	my $temp_z;
 	my $rest;
-	($rest, $temp_z) = ($_=~ /(.*\b)Z(\-?\d{1,5}(?:\.\d{1,4})?)\s*$/mi);
+	my $tail;
+	($rest, $temp_z, $tail) = ($_=~ /(.*\b)Z(\-?\d{1,5}(?:\.\d{1,4})?)\b(.*)/mi);
+	
+	# If there is no Z-value in the line, then don't touch that line. Send it to the output
+	# array directly without modifications. 
+	
+	unless ($temp_z) {
+		push (@output_array, $_);
+		next;
+	}
 
+        # If Z=0/-14.75 in the first batch of lines, we can safely assume that it's the starting position and need not be changed. 
 
-        # If Z=0 in the first batch of lines, we can safely assume that it's the starting position and need not be changed. 
-
-	if (($temp_z == 0) && ($count== 1)) {
+		###################### THIS 0 as starting position IS CAUSING PROBLEMS ################
+		#########################################################################################
+	if ((($temp_z == 0)||($temp_z == -14.75)) && ($count== 1)) {
 	    push (@output_array, $_);
-
+		print "HERE!!\n";
             # If the counter is not reset to 0, the first block after 0 would start at double the step :p 
 	    $count = 0;
 	    next;
@@ -108,12 +118,13 @@ while ($input_data =~ /.*Z(\-?\d{1,5}(?:\.\d{1,4})?)\s*\n(?:.*Z(?:\1)\s*\n){1,}/
 
 	#Set the value of Z variable. 
 	$temp_z = $start_position + ($count*$new_step);
+	print "$temp_z = $start_position \+ \( $count * $new_step\)\n";
 
 	#remove space at the end (totally a hack) 
 	$rest =~ s/\s*$//g;
 
 	#push the line to the end of the output array. We then print this array at the end. 
-        push (@output_array, "$rest Z$temp_z");
+        push (@output_array, "$rest Z$temp_z$tail");
 
 	
     }
