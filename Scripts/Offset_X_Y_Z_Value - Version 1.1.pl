@@ -27,7 +27,13 @@ my $z_offset;
 $z_offset = <STDIN>;
 chomp $z_offset;
 
+print "Please enter the value of the r-offset. Enter 0 if you do not wish to offset:\n";
+my $r_offset; 
+$r_offset = <STDIN>;
+chomp $r_offset;
 
+
+########## FILE OPENING CAN BE DONE IN A MODULE ##############
 
 ## Open the input file (in the same location) 
 
@@ -70,27 +76,35 @@ foreach (@input_lines) {
 
 
 	#make sure we dont modify the wrong lines
-	unless ($_ =~ /z\-?\d{1,5}(?:\.\d{1,5})?\s*$/mi) {
+	unless ($_ =~ /^\s*G\d{1,3}(?=.*\b(?:x|y|z)\-?\d{1,5}(?:\.\d{1,5})?)/mi) {
 	    next;
 	}
 
 	my $temp_x;
 	my $temp_y;
 	my $temp_z;
+	my $temp_r;
 	my $rest;
 
 # Extract values from line using regex
 
-	($rest, $temp_x, $temp_y, $temp_z) = ($_=~ /(.*\b)X(\-?\d{1,5}(?:\.\d{1,4})?)\s{1,2}Y(\-?\d{1,5}(?:\.\d{1,4})?)\s{1,2}Z(\-?\d{1,5}(?:\.\d{1,4})?)\s*$/mi);
+	($rest, $temp_x, $temp_y, $temp_z, $temp_r) = ($_=~ /^\s*(G\d{1,2}.*?\b)(?=.*?(?:x|y|z)\-?\d{1,5}(?:\.\d{1,5})?)(?:X(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Y(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}Z(\-?\d{1,5}(?:\.\d{1,4})?))?(?:\s{1,2}R(\-?\d{1,5}(?:\.\d{1,4})?))?\s*$/mi);
 
 	#add offsets to the values
-	$temp_z += $z_offset;
-	$temp_x += $x_offset;
-	$temp_y += $y_offset; 
+	if ($temp_z){$temp_z += $z_offset;}
+	if ($temp_x){$temp_x += $x_offset;}
+	if ($temp_y){$temp_y += $y_offset;}
+	if ($temp_r){$temp_r += $r_offset;}
 
 
 	#print the new-line including the z-value and the rest of the stuff
-	$_ = "$rest"."X$temp_x Y$temp_y Z$temp_z";
+	$_ = "$rest";
+	if ($temp_x) {$_ .= "X$temp_x";}
+	if ($temp_y) {$_ .= " Y$temp_y";}
+	if ($temp_z) {$_ .= " Z$temp_z";}
+	if ($temp_r) {$_ .= " R$temp_r";}
+	
+	#	$_ = "$rest"."X$temp_x Y$temp_y Z$temp_z";
 	}
 	
 
