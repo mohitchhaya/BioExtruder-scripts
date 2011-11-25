@@ -1,0 +1,9 @@
+- Create/edit a file 
+
+- Right-click -> Open commit utility
+
+- Commit the changes
+
+- Open the command-line utility
+
+  O git push origin master 
