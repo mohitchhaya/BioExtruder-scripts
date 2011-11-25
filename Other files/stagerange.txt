@@ -1,0 +1,5 @@
+If stage with transparent platform is homed at centre-back with z=-15 on stage, the range is
+
+X <-75  , 85> or < -75,120> if not having left nozzle
+Y <-95  ,  0> or <-110,  0> with door open
+Z <-14.8, 50>	Z-max depends on nozzle/needle length!
