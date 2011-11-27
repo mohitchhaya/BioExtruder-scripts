@@ -114,7 +114,7 @@ while ($input_data =~ /^(?!.*X0(?:\.0)?\s{1,3}Y0(?:\.0)?\s{1,3}Z0(?:\.0)?).*(?!X
 
 	#Set the value of Z variable. 
 	$temp_z = $start_position + ($count*$new_step);
-	print "$temp_z = $start_position \+ \( $count * $new_step\)\n";
+#	print "$temp_z = $start_position \+ \( $count * $new_step\)\n";
 
 	#remove space at the end (totally a hack) 
 	$rest =~ s/\s*$//g;
