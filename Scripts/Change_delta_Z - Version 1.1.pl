@@ -94,23 +94,19 @@ while ($input_data =~ /^(?!.*X0(?:\.0)?\s{1,3}Y0(?:\.0)?\s{1,3}Z0(?:\.0)?).*(?!X
 	my $temp_z;
 	my $rest;
 	my $tail;
-	($rest, $temp_z, $tail) = ($_=~ /(.*\b)Z(\-?\d{1,5}(?:\.\d{1,4})?)\b(.*)/mi);
+	($rest, $temp_z, $tail) = ($_=~ /^\s*(G\d{0,3}.*\b)Z(\-?\d{1,5}(?:\.\d{1,4})?)\b(.*)/mi);
 	
 	# If there is no Z-value in the line, then don't touch that line. Send it to the output
 	# array directly without modifications. 
-	
-	unless ($temp_z) {
+	unless (defined $temp_z) {
 		push (@output_array, $_);
 		next;
 	}
 
         # If Z=0/-14.75 in the first batch of lines, we can safely assume that it's the starting position and need not be changed. 
 
-		###################### THIS 0 as starting position IS CAUSING PROBLEMS ################
-		#########################################################################################
 	if ((($temp_z == 0)||($temp_z == -14.75)) && ($count== 1)) {
 	    push (@output_array, $_);
-		print "HERE!!\n";
             # If the counter is not reset to 0, the first block after 0 would start at double the step :p 
 	    $count = 0;
 	    next;
