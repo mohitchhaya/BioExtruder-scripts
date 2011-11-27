@@ -7,3 +7,10 @@
 - Open the command-line utility
 
   O git push origin master 
+
+
+
+To pull updates from the server:
+
+$ git fetch upstream
+$ git merge upstream/master
